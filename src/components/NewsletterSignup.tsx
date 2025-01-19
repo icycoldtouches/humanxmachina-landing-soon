@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const NewsletterSignup = () => {
   const [email, setEmail] = useState("");
@@ -10,13 +11,22 @@ export const NewsletterSignup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success("Thank you for subscribing!");
-    setEmail("");
-    setLoading(false);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('subscribe-newsletter', {
+        body: { email }
+      });
+
+      if (error) throw error;
+
+      toast.success(data.message || "Thank you for subscribing!");
+      setEmail("");
+    } catch (error: any) {
+      console.error('Subscription error:', error);
+      toast.error(error.message || "Failed to subscribe. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
