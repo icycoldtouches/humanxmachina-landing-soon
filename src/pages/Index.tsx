@@ -1,6 +1,5 @@
 import { CookieConsent } from "@/components/CookieConsent";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
-import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -30,10 +29,11 @@ const Index = () => {
       <footer className="py-8 border-t border-gray-100">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-            <p>© {new Date().getFullYear()} humanXmachina. All rights reserved.</p>
+            <p>© 2024 humanXmachina. All rights reserved.</p>
             <div className="flex gap-6">
-              <Link to="/privacy" className="hover:text-secondary">Privacy Policy</Link>
-              <Link to="/terms" className="hover:text-secondary">Terms of Service</Link>
+              <a href="/privacy" className="hover:text-secondary">Privacy Policy</a>
+              <a href="/terms" className="hover:text-secondary">Terms of Service</a>
+              <a href="mailto:contact@humanxmachina.com" className="hover:text-secondary">Contact</a>
             </div>
           </div>
         </div>
