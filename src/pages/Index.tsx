@@ -35,7 +35,6 @@ const Index = () => {
             <div className="flex gap-6">
               <a href="/privacy" className="hover:text-secondary">Privacy Policy</a>
               <a href="/terms" className="hover:text-secondary">Terms of Service</a>
-              <a href="mailto:contact@humanxmachina.com" className="hover:text-secondary">Contact</a>
             </div>
           </div>
         </div>
