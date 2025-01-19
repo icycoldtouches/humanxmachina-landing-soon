@@ -2,10 +2,11 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://ihmlbokpiphvfuiqsjdb.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlobWxib2twaXBodmZ1aXFzamRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcyOTExNDksImV4cCI6MjA1Mjg2NzE0OX0.tpRSMJ-QXnaiQhBIutP-mSQ8TV-1tO11vSie-uLwgu0";
+// These values will be injected via Supabase secrets
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || '';
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
