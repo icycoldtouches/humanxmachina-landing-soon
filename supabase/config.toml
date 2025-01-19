@@ -1,1 +1,3 @@
 project_id = "ihmlbokpiphvfuiqsjdb"
+[functions.subscribe-newsletter]
+verify_jwt = false
