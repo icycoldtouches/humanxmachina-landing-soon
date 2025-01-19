@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 
 const BREVO_API_KEY = Deno.env.get('BREVO_API_KEY')
-const BREVO_LIST_ID = 2  // Your newsletter list ID
+const BREVO_LIST_ID = 4  // Updated newsletter list ID
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
