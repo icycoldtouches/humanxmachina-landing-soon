@@ -24,7 +24,7 @@ export const NewsletterSignup = () => {
           : null;
         
         if (errorBody?.code === 'duplicate_parameter') {
-          toast.error("This email is already subscribed to our newsletter!");
+          toast.success("Oops, thank you for wanting to be on our list so eagerly but you already subscribed! 😊");
         } else if (errorBody?.message) {
           toast.error(errorBody.message);
         } else {
