@@ -16,11 +16,19 @@ serve(async (req) => {
   }
 
   try {
+    // Validate BREVO_API_KEY
+    if (!BREVO_API_KEY) {
+      console.error('BREVO_API_KEY not found in environment variables');
+      throw new Error('Configuration error: API key not found');
+    }
+
     const { email } = await req.json()
 
     if (!email) {
       throw new Error('Email is required')
     }
+
+    console.log('Processing subscription for email:', email);
 
     // First, store in Supabase
     const supabaseClient = createClient(
@@ -33,8 +41,11 @@ serve(async (req) => {
       .insert([{ email }])
 
     if (dbError) {
+      console.error('Database error:', dbError);
       throw new Error(`Database error: ${dbError.message}`)
     }
+
+    console.log('Successfully stored email in database');
 
     // Then add to Brevo
     const response = await fetch('https://api.brevo.com/v3/contacts', {
@@ -42,7 +53,7 @@ serve(async (req) => {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'api-key': BREVO_API_KEY!,
+        'api-key': BREVO_API_KEY,
       },
       body: JSON.stringify({
         email,
@@ -54,9 +65,11 @@ serve(async (req) => {
     const data = await response.json()
 
     if (!response.ok) {
-      console.error('Brevo API error:', data)
+      console.error('Brevo API error:', data);
       throw new Error(data.message || 'Failed to subscribe to newsletter')
     }
+
+    console.log('Successfully added contact to Brevo');
 
     return new Response(
       JSON.stringify({ message: 'Successfully subscribed to newsletter' }),
@@ -67,9 +80,12 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Error in subscribe-newsletter function:', error)
+    console.error('Error in subscribe-newsletter function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: error instanceof Error ? error.stack : undefined 
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400
