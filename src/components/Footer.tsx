@@ -9,10 +9,10 @@ const Footer = () => {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-500">
           <p>© {currentYear} humanXmachina. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link to="/privacy" className="hover:text-secondary transition-colors">
+            <Link to="/privacy" className="hover:text-primary transition-colors">
               Privacy Policy
             </Link>
-            <Link to="/terms" className="hover:text-secondary transition-colors">
+            <Link to="/terms" className="hover:text-primary transition-colors">
               Terms of Service
             </Link>
           </div>
