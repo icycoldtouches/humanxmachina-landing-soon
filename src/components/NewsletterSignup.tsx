@@ -17,13 +17,28 @@ export const NewsletterSignup = () => {
         body: { email }
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check if the error response contains a message
+        const errorBody = error.message && error.message.includes('{') 
+          ? JSON.parse(error.message)
+          : null;
+        
+        if (errorBody?.code === 'duplicate_parameter') {
+          toast.error("This email is already subscribed to our newsletter!");
+        } else if (errorBody?.message) {
+          toast.error(errorBody.message);
+        } else {
+          toast.error("Failed to subscribe. Please try again later.");
+        }
+        console.error('Newsletter subscription error details:', error);
+        return;
+      }
 
       toast.success("Thank you for subscribing!");
       setEmail("");
     } catch (error) {
       console.error('Newsletter subscription error:', error);
-      toast.error("Failed to subscribe. Please try again later.");
+      toast.error("An unexpected error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }

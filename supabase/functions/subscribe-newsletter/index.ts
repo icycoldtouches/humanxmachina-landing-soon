@@ -25,17 +25,40 @@ serve(async (req) => {
     const { email } = await req.json()
 
     if (!email) {
-      throw new Error('Email is required')
+      return new Response(
+        JSON.stringify({ message: 'Email is required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
     }
 
     console.log('Processing subscription for email:', email);
 
-    // First, store in Supabase
+    // First, check if email already exists in Supabase
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
+    const { data: existingSubscription } = await supabaseClient
+      .from('newsletter_subscriptions')
+      .select('email')
+      .eq('email', email)
+      .single();
+
+    if (existingSubscription) {
+      return new Response(
+        JSON.stringify({ 
+          message: 'This email is already subscribed to our newsletter',
+          code: 'duplicate_parameter'
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      );
+    }
+
+    // Store in Supabase
     const { error: dbError } = await supabaseClient
       .from('newsletter_subscriptions')
       .insert([{ email }])
@@ -47,7 +70,7 @@ serve(async (req) => {
 
     console.log('Successfully stored email in database');
 
-    // Then add to Brevo
+    // Add to Brevo
     const response = await fetch('https://api.brevo.com/v3/contacts', {
       method: 'POST',
       headers: {
@@ -66,7 +89,23 @@ serve(async (req) => {
 
     if (!response.ok) {
       console.error('Brevo API error:', data);
-      throw new Error(data.message || 'Failed to subscribe to newsletter')
+      // Delete the Supabase entry if Brevo fails
+      await supabaseClient
+        .from('newsletter_subscriptions')
+        .delete()
+        .eq('email', email);
+        
+      return new Response(
+        JSON.stringify({ 
+          message: 'Failed to add contact to newsletter service',
+          code: 'brevo_error',
+          details: data
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      );
     }
 
     console.log('Successfully added contact to Brevo');
